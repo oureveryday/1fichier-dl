@@ -12,6 +12,10 @@
 
 ⭐ Bypass time limits
 
+## Mod
+* Modded to download using aria2 with command line. (Aria2 RPC config is in core\download\pyaria2.py) 
+* Fixed urllib 1.26 problem
+
 ## Credits
 * All icons, including the app icon, were provided by [Feather](https://feathericons.com/).
 * Proxies provided by [Proxyscan](https://www.proxyscan.io/).

@@ -32,10 +32,13 @@ import subprocess
 import xmlrpc.client
 import os
 import time
+import sys
 
 DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 6800
 SERVER_URI_FORMAT = 'http://{}:{:d}/rpc'
+MAX_DOWNLOAD = 3
+MAX_DOWNLOAD_WAIT_SEC = 3
 
 class PyAria2(object):
     def __init__(self, host=DEFAULT_HOST, port=DEFAULT_PORT, session=None):
@@ -55,8 +58,8 @@ class PyAria2(object):
             print("Make sure aria2 is running.")
             exit()
         print("aria2 init success.")
-            
-
+        
+                
     def addUri(self, uris, options=None, position=None):
         '''
         This method adds new HTTP(S)/FTP/BitTorrent Magnet URI.
@@ -68,12 +71,36 @@ class PyAria2(object):
         return: This method returns GID of registered download.
         '''
         uris, options = self.fixUris(uris), self.fixOptions(options)
-        return self.server.aria2.addUri(uris, options, position)
+        self.server.aria2.addUri(uris, options, position)
+        numActive = int( self.getGlobalStat()['numActive'])
+        if ( numActive >= MAX_DOWNLOAD ):
+            print("Waiting for download to complete.",end="")
+            sys.stdout.flush()
+            while ( numActive >= MAX_DOWNLOAD ):
+                print(".",end="")
+                sys.stdout.flush()
+                time.sleep(MAX_DOWNLOAD_WAIT_SEC)
+                numActive= int( self.getGlobalStat()['numActive'])
+            print("\n",end="")
+        
 
     def fixUris(self, uris):
         return uris or list()
 
     def fixOptions(self, options):
         return options or dict()
+
+    def getGlobalStat(self):
+        '''
+        This method returns global statistics such as overall download and upload speed.
+
+        return: The method response is of type struct and contains following keys.
+        '''
+        return self.server.aria2.getGlobalStat()
+        
+
+
+
+
 
     

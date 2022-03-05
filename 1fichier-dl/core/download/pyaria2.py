@@ -82,6 +82,7 @@ class PyAria2(object):
                 time.sleep(MAX_DOWNLOAD_WAIT_SEC)
                 numActive= int( self.getGlobalStat()['numActive'])
             print("\n",end="")
+        return
         
 
     def fixUris(self, uris):
